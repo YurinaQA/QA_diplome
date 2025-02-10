@@ -3,6 +3,7 @@ package ru.iteco.fmhandroid.ui.pages;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.supportsInputMethods;
+import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
@@ -25,6 +26,7 @@ public class AuthorizationPage extends DataGenerator {
     public static ViewInteraction passwordFieldAsTextField = onView(allOf(supportsInputMethods(), isDescendantOfA(withId(R.id.password_text_input_layout))));
     public static ViewInteraction logOut = onView(allOf(withId(android.R.id.title), withText("Log out")));
     public static ViewInteraction exitBtn = onView(withId(R.id.authorization_image_button));
+
 }
 
 
