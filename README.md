@@ -11,5 +11,5 @@
 **Инструкция по запуску:**
 - Открыть склонированый проект;
 - Запустить эмулятор Pixel 8 API 29 или подключить устройство для тестирования;
-- Запустить тесты из пакета, путь: app/src/androidTest/java/ru/netology/qa/......;
+- Запустить тесты из пакета, путь: app/src/androidTest/java/ru/iteco/fmhandroid/ui/tests;
 - Запустить тесты командой ./gradlew connectedCheck .

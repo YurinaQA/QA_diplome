@@ -28,7 +28,7 @@ public class WaitId {
     public ActivityScenarioRule<AppActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(AppActivity.class);
 
-    private static long waitTimeout = 10000;
+    private static long waitTimeout = 5000;
 
     public static void waitUntilElement(final int viewId) {
         onView(isRoot()).perform(waitId(viewId, waitTimeout));
@@ -64,7 +64,7 @@ public class WaitId {
                             return;
                         }
                     }
-                    uiController.loopMainThreadForAtLeast(50);
+                    uiController.loopMainThreadForAtLeast(100);
                 }
                 while (System.currentTimeMillis() < endTime);
                 // timeout happens
@@ -104,7 +104,7 @@ public class WaitId {
                             return;
                         }
                     }
-                    uiController.loopMainThreadForAtLeast(50);
+                    uiController.loopMainThreadForAtLeast(100);
                 }
                 while (System.currentTimeMillis() < endTime);
                 // timeout happens
