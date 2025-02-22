@@ -286,5 +286,10 @@ public class NewsStep extends DataGenerator {
         NewCPTitleNews(text);
     }
 
+    //Проверка работы Switch раздела "Creating news"
+    public static void checkSwitchCN(){
+        waitUntilElement(R.id.switcher);
+        Switcher.check(matches(isEnabled()));
+    }
 
 }

@@ -2,7 +2,7 @@ package ru.iteco.fmhandroid.ui.tests;
 
 
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.isNotClickable;
+import static androidx.test.espresso.matcher.ViewMatchers.isClickable;
 import static ru.iteco.fmhandroid.ui.WaitId.waitUntilElement;
 import static ru.iteco.fmhandroid.ui.pages.AppBarPage.navigationAbout;
 
@@ -69,7 +69,7 @@ public class AppBarTest extends DataGenerator {
         AppBarStep.clickNavigationBtn();
         //Assert
         waitUntilElement(android.R.id.title);
-        navigationAbout.check(matches(isNotClickable()));
+        navigationAbout.check(matches(isClickable()));
     }
 
     @Test

@@ -114,7 +114,7 @@ public class NewsTest extends DataGenerator {
     }
 
     @Test
-    @Story("Закрытие раздела 'Filter news' кнопкой 'Cancel' ")
+    @Story("Закрытие раздела 'Filter news' кнопкой 'Cancel'")
     public void shouldCloseFilterSection() {
         NewsStep.goToFilterSection();
         NewsStep.clickCancelFilter();
@@ -258,5 +258,18 @@ public class NewsTest extends DataGenerator {
         AuthorizationPage.errorMessageText("Fill empty fields", decorView);
     }
 
+    @Test
+    @Story("Переключение статуса 'Active'/'Not active' в разделе 'Creating news'")
+    public void shouldSwitchCN() {
+        shouldOpenCreatingNewsSection();
+        NewsStep.selectCategoryFiler(category_1);
+        NewsStep.emptyTitleEN(newNews);
+        NewsStep.DateFieldSet(futureDate(1));
+        NewsStep.TimeFieldSet(futureTimeMinute(1));
+        NewsStep.DiscriptionSet(newNews);
+        //Assert
+        NewsStep.checkSwitchCN();
+
+    }
 
 }
