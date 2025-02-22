@@ -17,6 +17,6 @@
 - Непрошедшие: 8 тестов (7 %).
 
 **Непрошедшие тесты**
-[Баг-репорты](https://github.com/Tatyanochka16/Diploma/blob/main/BugReports.xlsx)
+- [Баг-репорты](https://github.com/Tatyanochka16/Diploma/blob/main/BugReports.xlsx)
 
 
