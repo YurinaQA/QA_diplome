@@ -1,6 +1,5 @@
 package ru.iteco.fmhandroid.ui.tests;
 
-
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.filters.LargeTest;
 
@@ -25,31 +24,38 @@ public class MainTest extends DataGenerator {
     public ActivityScenarioRule<AppActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(AppActivity.class);
 
+    private AuthorizationStep authorizationStep;
+    private MainStep mainStep;
+    private NewsStep newsStep;
+
     @Before
     public void loginAuth() {
+        authorizationStep = new AuthorizationStep();
+        mainStep = new MainStep();
+        newsStep = new NewsStep();
+
         try {
-            MainStep.checkNewsTitle();
+            mainStep.checkNewsTitle();
         } catch (androidx.test.espresso.PerformException e) {
-            AuthorizationStep.loginFieldInput(validLogin);
-            AuthorizationStep.passwordFieldInput(validPassword);
-            AuthorizationStep.clickLoginBtn();
+            authorizationStep.loginFieldInput(validLogin);
+            authorizationStep.passwordFieldInput(validPassword);
+            authorizationStep.clickLoginBtn();
         }
+        mainStep.checkNewsTitle();
     }
 
     @Test
     @Story("Разворачивание/сворачивание ленты новостей")
-    public void ShouldCloseAndOpenNewsFeed() {
-        MainStep.clickOpenNewsBtn();
-        MainStep.clickOpenNewsBtn();
-        //Assertion
-        MainStep.checkAllNewsText();
+    public void shouldCloseAndOpenNewsFeed() {
+        mainStep.clickOpenNewsBtn();
+        mainStep.clickOpenNewsBtn();
+        mainStep.checkAllNewsText();
     }
 
     @Test
     @Story("Переход на страницу новостей через 'All news' ")
-    public void ShouldGoToNews() {
-        MainStep.clickAllNewsText();
-        //Assertion
-        NewsStep.checkNewsPageTitle();
+    public void shouldGoToNews() {
+        mainStep.clickAllNewsText();
+        newsStep.checkNewsPageTitleDisplayed();
     }
 }

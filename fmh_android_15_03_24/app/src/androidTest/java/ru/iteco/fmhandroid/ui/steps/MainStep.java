@@ -4,43 +4,51 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static ru.iteco.fmhandroid.ui.WaitId.waitUntilElement;
-import static ru.iteco.fmhandroid.ui.pages.MainPage.allNewsBtn;
-import static ru.iteco.fmhandroid.ui.pages.MainPage.allNewsText;
-import static ru.iteco.fmhandroid.ui.pages.MainPage.newsFeedTitle;
-import static ru.iteco.fmhandroid.ui.pages.MainPage.openNewsBtn;
-import static ru.iteco.fmhandroid.ui.pages.NewsPage.NewsPageTitle;
 
 import ru.iteco.fmhandroid.R;
+import ru.iteco.fmhandroid.ui.WaitId;
 import ru.iteco.fmhandroid.ui.data.DataGenerator;
+import ru.iteco.fmhandroid.ui.pages.MainPage;
 
+/**
+ * Класс содержит шаги взаимодействия с главным экраном приложения.
+ */
 public class MainStep extends DataGenerator {
-    //Сворачивание/разворачивание ленты новостей
+
+    private static final MainPage mainPage = new MainPage();
+
+    /**
+     * Нажатие на кнопку сворачивания/разворачивания ленты новостей.
+     */
     public static void clickOpenNewsBtn() {
-        waitUntilElement(R.id.expand_material_button);
-        openNewsBtn.check(matches(isDisplayed()));
-        openNewsBtn.perform(click());
+        WaitId.waitUntilElement(R.id.expand_material_button);
+        mainPage.getOpenNewsButton().check(matches(isDisplayed()));
+        mainPage.getOpenNewsButton().perform(click());
     }
 
-    //Проверка отображения "All news"
+    /**
+     * Проверка отображения текста "All news" на экране.
+     */
     public static void checkAllNewsText() {
-        waitUntilElement(R.id.all_news_text_view);
-        allNewsText.check(matches(isDisplayed()));
-        allNewsText.check(matches(withText(allNewsTitle)));
+        WaitId.waitUntilElement(R.id.all_news_text_view);
+        mainPage.getAllNewsText().check(matches(isDisplayed()));
+        mainPage.getAllNewsText().check(matches(withText(allNewsTitle)));
     }
 
-    //Переход на страницу новостей через "All news"
+    /**
+     * Переход на страницу всех новостей через нажатие на "All news".
+     */
     public static void clickAllNewsText() {
-        waitUntilElement(R.id.all_news_text_view);
-        allNewsBtn.check(matches(isDisplayed()));
-        allNewsBtn.perform(click());
+        WaitId.waitUntilElement(R.id.all_news_text_view);
+        mainPage.getAllNewsButton().check(matches(isDisplayed()));
+        mainPage.getAllNewsButton().perform(click());
     }
 
-    //Проверка заголовка на главной странице
+    /**
+     * Проверка отображения заголовка ленты новостей на главной странице.
+     */
     public static void checkNewsTitle() {
-        waitUntilElement(R.id.container_list_news_include_on_fragment_main);
-        newsFeedTitle.check(matches(isDisplayed()));
+        WaitId.waitUntilElement(R.id.container_list_news_include_on_fragment_main);
+        mainPage.getNewsFeedTitle().check(matches(isDisplayed()));
     }
-
-
 }

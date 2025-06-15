@@ -22,7 +22,8 @@ data class News(
     data class Category(
         val id: Int,
         val name: String,
-        val deleted: Boolean
+        val deleted: Boolean,
+        val type: Type = Type.Unknown
     ) : Parcelable {
 
         enum class Type {

@@ -3,8 +3,9 @@ package ru.iteco.fmhandroid.repository.newsRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import ru.iteco.fmhandroid.dto.News
-import ru.iteco.fmhandroid.dto.NewsWithCategory
 import ru.iteco.fmhandroid.dto.User
+import ru.iteco.fmhandroid.entity.NewsEntity
+
 
 interface NewsRepository {
     val newsList: List<News>
@@ -22,7 +23,7 @@ interface NewsRepository {
         dateStart: Long? = null,
         dateEnd: Long? = null,
         status: Boolean? = null
-    ): Flow<List<NewsWithCategory>>
+    ): Flow<List<NewsEntity>>
 
     suspend fun changeIsOpen(newsItem: News)
 }

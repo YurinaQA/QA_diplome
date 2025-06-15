@@ -2,13 +2,13 @@ package ru.iteco.fmhandroid.dao
 
 import androidx.room.*
 import kotlinx.coroutines.flow.Flow
-import ru.iteco.fmhandroid.dto.NewsWithCategory
 import ru.iteco.fmhandroid.entity.NewsCategoryEntity
 import ru.iteco.fmhandroid.entity.NewsEntity
 
+
 @Dao
 interface NewsDao {
-    @Transaction
+
     @Query(
         """SELECT * FROM NewsEntity
             WHERE (:publishEnabled IS NULL OR :publishEnabled = publishEnabled)
@@ -27,11 +27,10 @@ interface NewsDao {
         dateStart: Long? = null,
         dateEnd: Long? = null,
         status: Boolean? = null
-    ): Flow<List<NewsWithCategory>>
+    ): Flow<List<NewsEntity>>
 
-    @Transaction
     @Query("SELECT * FROM NewsEntity")
-    suspend fun getAllNewsList(): List<NewsWithCategory>
+    suspend fun getAllNewsList(): List<NewsEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(newsItem: NewsEntity)
@@ -40,14 +39,15 @@ interface NewsDao {
     suspend fun insert(news: List<NewsEntity>)
 
     @Query("DELETE FROM NewsEntity WHERE id = :id")
-    suspend fun removeNewsItemById(id: Int)
+    suspend fun removeNewsItemById(id: Int): Int
 
     @Query("DELETE FROM NewsEntity WHERE id IN (:idList)")
-    suspend fun removeNewsItemsByIdList(idList: List<Int?>)
+    suspend fun removeNewsItemsByIdList(idList: List<Int>): Int
 }
 
 @Dao
 interface NewsCategoryDao {
+
     @Query("SELECT * FROM NewsCategoryEntity ORDER BY id")
     fun getAllNewsCategories(): Flow<List<NewsCategoryEntity>>
 

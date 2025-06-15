@@ -5,44 +5,57 @@ import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static ru.iteco.fmhandroid.ui.WaitId.waitUntilElement;
-import static ru.iteco.fmhandroid.ui.pages.AuthorizationPage.AuthorizationText;
-import static ru.iteco.fmhandroid.ui.pages.AuthorizationPage.loginButton;
-import static ru.iteco.fmhandroid.ui.pages.AuthorizationPage.loginField;
-import static ru.iteco.fmhandroid.ui.pages.AuthorizationPage.loginFieldAsTextField;
-import static ru.iteco.fmhandroid.ui.pages.AuthorizationPage.passwordField;
-import static ru.iteco.fmhandroid.ui.pages.AuthorizationPage.passwordFieldAsTextField;
 
 import ru.iteco.fmhandroid.R;
-import ru.iteco.fmhandroid.ui.data.DataGenerator;
+import ru.iteco.fmhandroid.ui.WaitId;
+import ru.iteco.fmhandroid.ui.pages.AuthorizationPage;
 
-public class AuthorizationStep extends DataGenerator {
-    //Заполнение поля логина
-    public static void loginFieldInput(String input) {
-        waitUntilElement(R.id.login_text_input_layout);
-        loginFieldAsTextField.perform(click());
-        loginFieldAsTextField.perform(replaceText(input), closeSoftKeyboard());
-        loginField.check(matches(isDisplayed()));
+/**
+ * Шаги для авторизации в приложении.
+ */
+public class AuthorizationStep {
+
+    private final AuthorizationPage authorizationPage;
+
+    public AuthorizationStep() {
+        this.authorizationPage = new AuthorizationPage();
     }
 
-    //Заполнение поля пароля
-    public static void passwordFieldInput(String input) {
-        passwordFieldAsTextField.perform(click());
-        passwordFieldAsTextField.perform(replaceText(input), closeSoftKeyboard());
-        passwordField.check(matches(isDisplayed()));
+    /**
+     * Ввод текста в поле логина.
+     * @param input Текст для ввода в поле логина.
+     */
+    public void loginFieldInput(String input) {
+        WaitId.waitUntilElement(R.id.login_text_input_layout);
+        authorizationPage.getLoginTextField().perform(click());
+        authorizationPage.getLoginTextField().perform(replaceText(input), closeSoftKeyboard());
+        authorizationPage.getLoginFieldLayout().check(matches(isDisplayed()));
     }
 
-    //Нажатие кнопки входа
-    public static void clickLoginBtn () {
-        loginButton.check(matches(isDisplayed()));
-        loginButton.perform(click());
+    /**
+     * Ввод текста в поле пароля.
+     * @param input Текст для ввода в поле пароля.
+     */
+    public void passwordFieldInput(String input) {
+        WaitId.waitUntilElement(R.id.password_text_input_layout);
+        authorizationPage.getPasswordTextField().perform(click());
+        authorizationPage.getPasswordTextField().perform(replaceText(input), closeSoftKeyboard());
+        authorizationPage.getPasswordFieldLayout().check(matches(isDisplayed()));
     }
 
-    //Проверка отображения заголовка "Authorization"
-    public static void checkAuthorizationPage () {
-        waitUntilElement("Authorization");
-        //waitUntilElement(R.id.nav_host_fragment);
-        AuthorizationText.check(matches(isDisplayed()));
+    /**
+     * Нажатие кнопки входа.
+     */
+    public void clickLoginBtn() {
+        authorizationPage.getLoginButton().check(matches(isDisplayed()));
+        authorizationPage.getLoginButton().perform(click());
     }
 
+    /**
+     * Проверка отображения заголовка страницы "Authorization".
+     */
+    public void checkAuthorizationPage() {
+        WaitId.waitUntilElement("Authorization");
+        authorizationPage.getAuthorizationText().check(matches(isDisplayed()));
+    }
 }

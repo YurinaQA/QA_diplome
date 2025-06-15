@@ -1,118 +1,57 @@
-package ru.iteco.fmhandroid.adapter
+package ru.iteco.fmhandroid.ui
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import ru.iteco.fmhandroid.R
-import ru.iteco.fmhandroid.databinding.ItemNewsControlPanelBinding
-import ru.iteco.fmhandroid.dto.News
-import ru.iteco.fmhandroid.dto.NewsWithCategory
-import ru.iteco.fmhandroid.extensions.getType
-import ru.iteco.fmhandroid.utils.Utils
-import ru.iteco.fmhandroid.utils.Utils.generateShortUserName
 
-interface NewsOnInteractionListener {
-    fun onCard(newsItem: News)
-    fun onEdit(newItemWithCategory: NewsWithCategory)
-    fun onRemove(newItemWithCategory: NewsWithCategory)
-}
+data class NewsItem(
+    val id: Int,
+    val title: String,
+    val description: String
+)
 
-class NewsControlPanelListAdapter(
-    private val onInteractionListener: NewsOnInteractionListener
-) : ListAdapter<NewsWithCategory, NewsControlPanelListAdapter.NewsControlPanelViewHolder>(
-    NewsControlPanelDiffCallBack
-) {
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NewsControlPanelViewHolder {
-        val binding = ItemNewsControlPanelBinding.inflate(
-            LayoutInflater.from(parent.context),
-            parent,
-            false
-        )
+class NewsControlPanelAdapter(
+    private var items: List<NewsItem>,
+    private val listener: OnNewsItemClickListener
+) : RecyclerView.Adapter<NewsControlPanelAdapter.NewsViewHolder>() {
 
-        return NewsControlPanelViewHolder(binding, onInteractionListener)
+    interface OnNewsItemClickListener {
+        fun onNewsClicked(newsItem: NewsItem)
     }
 
-    override fun onBindViewHolder(holder: NewsControlPanelViewHolder, position: Int) {
-        val newsWithCategory = getItem(position)
-        holder.bind(newsWithCategory)
+    fun updateItems(newItems: List<NewsItem>) {
+        items = newItems
+        notifyDataSetChanged()
     }
 
-    class NewsControlPanelViewHolder(
-        private val binding: ItemNewsControlPanelBinding,
-        private val onInteractionListener: NewsOnInteractionListener
-    ) : RecyclerView.ViewHolder(binding.root) {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NewsViewHolder {
+        // Убедись, что в ресурсах есть файл item_news_control_panel.xml
+        val view = LayoutInflater.from(parent.context)
+            .inflate(R.layout.item_news_control_panel, parent, false)
+        return NewsViewHolder(view)
+    }
 
-        fun bind(newsItem: NewsWithCategory) {
-            with(binding) {
-                newsItemTitleTextView.text = newsItem.newsItem.title
-                newsItemDescriptionTextView.text = newsItem.newsItem.description
-                newsItemPublicationDateTextView.text =
-                    Utils.formatDate(newsItem.newsItem.publishDate)
-                newsItemCreateDateTextView.text =
-                    Utils.formatDate(newsItem.newsItem.createDate)
-                newsItemAuthorNameTextView.text =
-                    generateShortUserName(newsItem.newsItem.creatorName)
+    override fun onBindViewHolder(holder: NewsViewHolder, position: Int) {
+        val newsItem = items[position]
+        holder.bind(newsItem)
+    }
 
-                setCategoryIcon(newsItem)
+    override fun getItemCount(): Int = items.size
 
-                if (newsItem.newsItem.isOpen) {
-                    newsItemDescriptionTextView.visibility = View.VISIBLE
-                    viewNewsItemImageView.setImageResource(R.drawable.expand_less_24)
-                } else {
-                    newsItemDescriptionTextView.visibility = View.GONE
-                    viewNewsItemImageView.setImageResource(R.drawable.expand_more_24)
-                }
+    inner class NewsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        private val titleText: TextView = itemView.findViewById(R.id.news_item_title_text_view)
+        private val descriptionText: TextView = itemView.findViewById(R.id.news_item_description_text_view)
 
-                newsItemMaterialCardView.setOnClickListener {
-                    onInteractionListener.onCard(newsItem.newsItem)
-                }
+        fun bind(newsItem: NewsItem) {
+            titleText.text = newsItem.title
+            descriptionText.text = newsItem.description
 
-                if (newsItem.newsItem.publishEnabled) {
-                    newsItemPublishedTextView.text =
-                        itemView.context.getString(R.string.news_control_panel_active)
-                    newsItemPublishedIconImageView.setImageResource(R.drawable.ic_baseline_check_24)
-                } else {
-                    newsItemPublishedTextView.text =
-                        itemView.context.getString(R.string.news_control_panel_not_active)
-                    newsItemPublishedIconImageView.setImageResource(R.drawable.ic_baseline_clear_24)
-                }
-
-                editNewsItemImageView.setOnClickListener {
-                    onInteractionListener.onEdit(newsItem)
-                }
-
-                deleteNewsItemImageView.setOnClickListener {
-                    onInteractionListener.onRemove(newsItem)
-                }
+            itemView.setOnClickListener {
+                listener.onNewsClicked(newsItem)
             }
         }
-
-        private fun setCategoryIcon(newsItem: NewsWithCategory) {
-            val iconResId = when (newsItem.category.getType()) {
-                News.Category.Type.Advertisement -> R.raw.icon_advertisement
-                News.Category.Type.Salary -> R.raw.icon_salary
-                News.Category.Type.Union -> R.raw.icon_union
-                News.Category.Type.Birthday -> R.raw.icon_birthday
-                News.Category.Type.Holiday -> R.raw.icon_holiday
-                News.Category.Type.Massage -> R.raw.icon_massage
-                News.Category.Type.Gratitude -> R.raw.icon_gratitude
-                News.Category.Type.Help -> R.raw.icon_help
-                News.Category.Type.Unknown -> return
-            }
-            binding.categoryIconImageView.setImageResource(iconResId)
-        }
-    }
-}
-
-private object NewsControlPanelDiffCallBack : DiffUtil.ItemCallback<NewsWithCategory>() {
-    override fun areItemsTheSame(oldItem: NewsWithCategory, newItem: NewsWithCategory): Boolean {
-        return oldItem.newsItem.id == newItem.newsItem.id
-    }
-
-    override fun areContentsTheSame(oldItem: NewsWithCategory, newItem: NewsWithCategory): Boolean {
-        return oldItem == newItem
     }
 }

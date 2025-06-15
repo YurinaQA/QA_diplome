@@ -71,15 +71,15 @@ class CreateEditNewsFragment : Fragment(R.layout.fragment_create_edit_news) {
         binding = FragmentCreateEditNewsBinding.bind(view)
 
         with(binding) {
-            containerCustomAppBarIncludeOnFragmentCreateEditNews.mainMenuImageButton.visibility =
-                View.GONE
-            containerCustomAppBarIncludeOnFragmentCreateEditNews.authorizationImageButton.visibility =
-                View.GONE
-            containerCustomAppBarIncludeOnFragmentCreateEditNews.ourMissionImageButton.visibility =
-                View.GONE
-            containerCustomAppBarIncludeOnFragmentCreateEditNews.trademarkImageView.visibility =
-                View.GONE
+            containerCustomAppBarIncludeOnFragmentCreateEditNews.apply {
+                mainMenuImageButton.visibility = View.GONE
+                authorizationImageButton.visibility = View.GONE
+                ourMissionImageButton.visibility = View.GONE
+                trademarkImageView.visibility = View.GONE
+            }
+
             newsItemCategoryTextInputLayout.isStartIconVisible = false
+
             if (args.newsItemArg == null) {
                 containerCustomAppBarIncludeOnFragmentCreateEditNews.customAppBarTitleTextView.apply {
                     visibility = View.VISIBLE
@@ -101,15 +101,12 @@ class CreateEditNewsFragment : Fragment(R.layout.fragment_create_edit_news) {
                     setText(R.string.news)
                 }
             }
+
             args.newsItemArg?.let { newsItem ->
                 newsItemCategoryTextAutoCompleteTextView.setText(newsItem.category.name)
                 newsItemTitleTextInputEditText.setText(newsItem.newsItem.title)
-                newsItemPublishDateTextInputEditText.setText(
-                    Utils.formatDate(newsItem.newsItem.publishDate)
-                )
-                newsItemPublishTimeTextInputEditText.setText(
-                    Utils.formatTime(newsItem.newsItem.publishDate)
-                )
+                newsItemPublishDateTextInputEditText.setText(Utils.formatDate(newsItem.newsItem.publishDate))
+                newsItemPublishTimeTextInputEditText.setText(Utils.formatTime(newsItem.newsItem.publishDate))
                 newsItemDescriptionTextInputEditText.setText(newsItem.newsItem.description)
                 switcher.isChecked = newsItem.newsItem.publishEnabled
             }
@@ -119,30 +116,22 @@ class CreateEditNewsFragment : Fragment(R.layout.fragment_create_edit_news) {
                 switcher.isEnabled = false
             }
 
-            if (switcher.isChecked) {
-                switcher.setText(R.string.news_item_active)
-            } else {
-                switcher.setText(R.string.news_item_not_active)
-            }
+            updateSwitcherText()
 
             switcher.setOnClickListener {
-                if (switcher.isChecked) {
-                    switcher.setText(R.string.news_item_active)
-                } else {
-                    switcher.setText(R.string.news_item_not_active)
-                }
+                updateSwitcherText()
             }
 
             cancelButton.setOnClickListener {
                 val activity = activity ?: return@setOnClickListener
-                val dialog = AlertDialog.Builder(activity)
-                dialog.setMessage(R.string.cancellation)
-                    .setPositiveButton(R.string.fragment_positive_button) { alertDialog, _ ->
-                        alertDialog.dismiss()
+                AlertDialog.Builder(activity)
+                    .setMessage(R.string.cancellation)
+                    .setPositiveButton(R.string.fragment_positive_button) { dialog, _ ->
+                        dialog.dismiss()
                         findNavController().navigateUp()
                     }
-                    .setNegativeButton(R.string.cancel) { alertDialog, _ ->
-                        alertDialog.cancel()
+                    .setNegativeButton(R.string.cancel) { dialog, _ ->
+                        dialog.cancel()
                     }
                     .create()
                     .show()
@@ -164,21 +153,18 @@ class CreateEditNewsFragment : Fragment(R.layout.fragment_create_edit_news) {
         }
 
         lifecycleScope.launch {
-            viewModel.getAllNewsCategories().collect { category ->
-                val newsCategoryItems = category.map { it.name }
+            viewModel.getAllNewsCategories().collect { categories ->
+                val newsCategoryItems = categories.map { it.name }
 
                 with(binding) {
-                    val adapter =
-                        ArrayAdapter(requireContext(), R.layout.menu_item, newsCategoryItems)
+                    val adapter = ArrayAdapter(requireContext(), R.layout.menu_item, newsCategoryItems)
                     newsItemCategoryTextAutoCompleteTextView.setAdapter(adapter)
 
                     newsItemCategoryTextAutoCompleteTextView.setOnItemClickListener { parent, _, position, _ ->
-                        val selectedItem = parent.getItemAtPosition(position)
-                        val title = binding.newsItemTitleTextInputEditText
-                        newsCategoryItems.forEach { category ->
-                            if (title.text.isNullOrBlank() || title.text.toString() == category) {
-                                title.setText(selectedItem.toString())
-                            }
+                        val selectedItem = parent.getItemAtPosition(position).toString()
+                        val title = newsItemTitleTextInputEditText
+                        if (title.text.isNullOrBlank() || newsCategoryItems.contains(title.text.toString())) {
+                            title.setText(selectedItem)
                         }
                     }
                 }
@@ -199,13 +185,13 @@ class CreateEditNewsFragment : Fragment(R.layout.fragment_create_edit_news) {
 
         vPublishDatePicker.setOnClickListener {
             DatePickerDialog(
-                this.requireContext(),
+                requireContext(),
                 publishDatePicker,
                 calendar.get(Calendar.YEAR),
                 calendar.get(Calendar.MONTH),
                 calendar.get(Calendar.DAY_OF_MONTH)
             ).apply {
-                this.datePicker.minDate = (System.currentTimeMillis() - 1000)
+                this.datePicker.minDate = System.currentTimeMillis() - 1000
             }.show()
         }
 
@@ -219,7 +205,7 @@ class CreateEditNewsFragment : Fragment(R.layout.fragment_create_edit_news) {
 
         vPublishTimePicker.setOnClickListener {
             TimePickerDialog(
-                this.requireContext(),
+                requireContext(),
                 publishTimePicker,
                 calendar.get(Calendar.HOUR_OF_DAY),
                 calendar.get(Calendar.MINUTE),
@@ -228,29 +214,29 @@ class CreateEditNewsFragment : Fragment(R.layout.fragment_create_edit_news) {
         }
     }
 
+    private fun updateSwitcherText() {
+        if (binding.switcher.isChecked) {
+            binding.switcher.setText(R.string.news_item_active)
+        } else {
+            binding.switcher.setText(R.string.news_item_not_active)
+        }
+    }
+
     private fun FragmentCreateEditNewsBinding.emptyFieldWarning() {
         newsItemCategoryTextInputLayout.isStartIconVisible =
             newsItemCategoryTextAutoCompleteTextView.text.isNullOrBlank()
-        if (newsItemTitleTextInputEditText.text.isNullOrBlank()) {
-            newsItemTitleTextInputLayout.endIconMode = TextInputLayout.END_ICON_CUSTOM
-        } else {
-            newsItemTitleTextInputLayout.endIconMode = TextInputLayout.END_ICON_NONE
-        }
-        if (newsItemPublishDateTextInputEditText.text.isNullOrBlank()) {
-            newsItemCreateDateTextInputLayout.endIconMode = TextInputLayout.END_ICON_CUSTOM
-        } else {
-            newsItemCreateDateTextInputLayout.endIconMode = TextInputLayout.END_ICON_NONE
-        }
-        if (newsItemPublishTimeTextInputEditText.text.isNullOrBlank()) {
-            newsItemPublishTimeTextInputLayout.endIconMode = TextInputLayout.END_ICON_CUSTOM
-        } else {
-            newsItemPublishTimeTextInputLayout.endIconMode = TextInputLayout.END_ICON_NONE
-        }
-        if (newsItemDescriptionTextInputEditText.text.isNullOrBlank()) {
-            newsItemDescriptionTextInputLayout.endIconMode = TextInputLayout.END_ICON_CUSTOM
-        } else {
-            newsItemDescriptionTextInputLayout.endIconMode = TextInputLayout.END_ICON_NONE
-        }
+
+        newsItemTitleTextInputLayout.endIconMode =
+            if (newsItemTitleTextInputEditText.text.isNullOrBlank()) TextInputLayout.END_ICON_CUSTOM else TextInputLayout.END_ICON_NONE
+
+        newsItemCreateDateTextInputLayout.endIconMode =
+            if (newsItemPublishDateTextInputEditText.text.isNullOrBlank()) TextInputLayout.END_ICON_CUSTOM else TextInputLayout.END_ICON_NONE
+
+        newsItemPublishTimeTextInputLayout.endIconMode =
+            if (newsItemPublishTimeTextInputEditText.text.isNullOrBlank()) TextInputLayout.END_ICON_CUSTOM else TextInputLayout.END_ICON_NONE
+
+        newsItemDescriptionTextInputLayout.endIconMode =
+            if (newsItemDescriptionTextInputEditText.text.isNullOrBlank()) TextInputLayout.END_ICON_CUSTOM else TextInputLayout.END_ICON_NONE
     }
 
     private fun showErrorToast(text: Int) {
@@ -268,9 +254,7 @@ class CreateEditNewsFragment : Fragment(R.layout.fragment_create_edit_news) {
                 val editedNews = News(
                     id = news.newsItem.id,
                     title = newsItemTitleTextInputEditText.text.toString(),
-                    newsCategoryId = convertNewsCategory(
-                        newsItemCategoryTextAutoCompleteTextView.text.toString()
-                    ),
+                    newsCategoryId = convertNewsCategory(newsItemCategoryTextAutoCompleteTextView.text.toString()),
                     creatorName = news.newsItem.creatorName,
                     createDate = news.newsItem.createDate,
                     creatorId = news.newsItem.creatorId,
@@ -286,9 +270,7 @@ class CreateEditNewsFragment : Fragment(R.layout.fragment_create_edit_news) {
                 val createdNews = News(
                     id = null,
                     title = newsItemTitleTextInputEditText.text.toString().trim(),
-                    newsCategoryId = convertNewsCategory(
-                        newsItemCategoryTextAutoCompleteTextView.text.toString()
-                    ),
+                    newsCategoryId = convertNewsCategory(newsItemCategoryTextAutoCompleteTextView.text.toString()),
                     creatorName = Utils.fullUserNameGenerator(
                         viewModel.currentUser.lastName,
                         viewModel.currentUser.firstName,

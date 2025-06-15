@@ -7,11 +7,12 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import ru.iteco.fmhandroid.dto.News
-import ru.iteco.fmhandroid.dto.NewsWithCategory
 import ru.iteco.fmhandroid.dto.User
 import ru.iteco.fmhandroid.repository.newsRepository.NewsRepository
 import ru.iteco.fmhandroid.repository.userRepository.UserRepository
 import javax.inject.Inject
+import ru.iteco.fmhandroid.entity.NewsEntity
+
 
 @HiltViewModel
 class NewsControlPanelViewModel @Inject constructor(
@@ -41,7 +42,7 @@ class NewsControlPanelViewModel @Inject constructor(
     val removeNewsItemExceptionEvent = MutableSharedFlow<Unit>()
 
     @FlowPreview
-    val data: Flow<List<NewsWithCategory>> = filterFlow.flatMapMerge { filter ->
+    val data: Flow<List<NewsEntity>> = filterFlow.flatMapMerge { filter ->
         newsRepository.getAllNews(
             viewModelScope,
             newsCategoryId = filter.newsCategoryId,

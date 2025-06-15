@@ -1,214 +1,104 @@
-package ru.iteco.fmhandroid.ui
+package ru.iteco.fmhandroid.adapter
 
-import android.app.AlertDialog
-import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
-import android.widget.PopupMenu
-import androidx.core.view.isGone
-import androidx.core.view.isVisible
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.setFragmentResultListener
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
-import androidx.navigation.fragment.findNavController
-import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
+import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
+import ru.iteco.fmhandroid.databinding.ItemNewsControlPanelBinding
+import ru.iteco.fmhandroid.entity.NewsEntity
+import java.text.SimpleDateFormat
 import ru.iteco.fmhandroid.R
-import ru.iteco.fmhandroid.adapter.NewsControlPanelListAdapter
-import ru.iteco.fmhandroid.adapter.NewsOnInteractionListener
-import ru.iteco.fmhandroid.databinding.FragmentNewsControlPanelBinding
-import ru.iteco.fmhandroid.dto.News
-import ru.iteco.fmhandroid.dto.NewsFilterArgs
-import ru.iteco.fmhandroid.dto.NewsWithCategory
-import ru.iteco.fmhandroid.enum.FragmentsTags
-import ru.iteco.fmhandroid.utils.Utils
-import ru.iteco.fmhandroid.viewmodel.AuthViewModel
-import ru.iteco.fmhandroid.viewmodel.NewsControlPanelViewModel
+import java.util.*
 
-@AndroidEntryPoint
-class NewsControlPanelFragment : Fragment(R.layout.fragment_news_control_panel) {
-    private lateinit var binding: FragmentNewsControlPanelBinding
-    private val viewModel: NewsControlPanelViewModel by viewModels()
-    private val authViewModel: AuthViewModel by viewModels()
+class NewsControlPanelAdapter(
+    private var newsItems: List<NewsEntity>,
+    private val categoryIconProvider: (Int) -> Int?, // Возвращает ресурс иконки для newsCategoryId
+    private val listener: OnNewsItemClickListener
+) : RecyclerView.Adapter<NewsControlPanelAdapter.NewsViewHolder>() {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
+    interface OnNewsItemClickListener {
+        fun onNewsClicked(newsItem: NewsEntity, position: Int)
+        fun onDeleteClicked(newsItem: NewsEntity)
+        fun onEditClicked(newsItem: NewsEntity)
+    }
 
-        lifecycleScope.launchWhenCreated {
-            viewModel.onRefresh()
+    private val dateFormat = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
+
+    inner class NewsViewHolder(private val binding: ItemNewsControlPanelBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+
+        fun bind(newsItem: NewsEntity, position: Int) {
+            binding.newsItemTitleTextView.text = newsItem.title
+            binding.newsItemDescriptionTextView.text = newsItem.description
+            binding.newsItemAuthorTextView.text = newsItem.creatorName
+
+            binding.newsItemPublicationTextView.text = if (newsItem.publishDate > 0)
+                dateFormat.format(Date(newsItem.publishDate)) else "-"
+            binding.newsItemCreateDateTextView.text = if (newsItem.createDate > 0)
+                dateFormat.format(Date(newsItem.createDate)) else "-"
+
+            val iconRes = categoryIconProvider(newsItem.newsCategoryId)
+            if (iconRes != null) {
+                binding.categoryIconImageView.setImageResource(iconRes)
+                binding.categoryIconImageView.visibility = View.VISIBLE
+            } else {
+                binding.categoryIconImageView.visibility = View.GONE
+            }
+
+            if (newsItem.publishEnabled) {
+                binding.newsItemPublishedTextView.text = binding.root.context.getString(R.string.news_control_panel_active)
+                binding.newsItemPublishedIconImageView.visibility = View.VISIBLE
+            } else {
+                binding.newsItemPublishedTextView.text = binding.root.context.getString(R.string.news_control_panel_not_active)
+                binding.newsItemPublishedIconImageView.visibility = View.GONE
+            }
+
+            binding.newsItemDescriptionTextView.visibility = if (newsItem.isOpen) View.VISIBLE else View.GONE
+
+            binding.viewNewsItemImageView.setImageResource(
+                if (newsItem.isOpen) R.drawable.expand_less_24 else R.drawable.expand_more_24
+            )
+
+            // Клики по элементам
+            binding.root.setOnClickListener {
+                listener.onNewsClicked(newsItem, position)
+            }
+            binding.deleteNewsItemImageView.setOnClickListener {
+                listener.onDeleteClicked(newsItem)
+            }
+            binding.editNewsItemImageView.setOnClickListener {
+                listener.onEditClicked(newsItem)
+            }
+            binding.viewNewsItemImageView.setOnClickListener {
+                listener.onNewsClicked(newsItem, position)
+            }
         }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        binding = FragmentNewsControlPanelBinding.bind(view)
-
-        val mainMenu = PopupMenu(
-            context,
-            binding.containerCustomAppBarIncludeOnFragmentNewsControlPanel.mainMenuImageButton
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NewsViewHolder {
+        val binding = ItemNewsControlPanelBinding.inflate(
+            LayoutInflater.from(parent.context), parent, false
         )
-        mainMenu.inflate(R.menu.menu_main)
-        binding.containerCustomAppBarIncludeOnFragmentNewsControlPanel
-            .mainMenuImageButton.setOnClickListener {
-                mainMenu.show()
-            }
-        mainMenu.setOnMenuItemClickListener {
-            when (it.itemId) {
-                R.id.menu_item_main -> {
-                    findNavController().navigate(R.id.action_newsControlPanelFragment_to_mainFragment)
-                    true
-                }
+        return NewsViewHolder(binding)
+    }
 
-                R.id.menu_item_news -> {
-                    findNavController().navigate(R.id.action_newsControlPanelFragment_to_newsListFragment)
-                    true
-                }
+    override fun onBindViewHolder(holder: NewsViewHolder, position: Int) {
+        holder.bind(newsItems[position], position)
+    }
 
-                R.id.menu_item_about -> {
-                    findNavController().navigate(R.id.action_newsControlPanelFragment_to_aboutFragment)
-                    true
-                }
+    override fun getItemCount(): Int = newsItems.size
 
-                else -> false
-            }
+    fun updateItems(newItems: List<NewsEntity>) {
+        newsItems = newItems
+        notifyDataSetChanged()
+    }
+
+    // Вспомогательный метод для переключения isOpen и обновления конкретного элемента
+    fun toggleOpenState(position: Int) {
+        val item = newsItems[position]
+        newsItems = newsItems.toMutableList().also {
+            it[position] = item.copy(isOpen = !item.isOpen)
         }
-
-        binding.containerCustomAppBarIncludeOnFragmentNewsControlPanel.ourMissionImageButton.setOnClickListener {
-            findNavController().navigate(R.id.action_newsControlPanelFragment_to_our_mission_fragment)
-        }
-
-        val authorizationMenu = PopupMenu(
-            context,
-            binding.containerCustomAppBarIncludeOnFragmentNewsControlPanel.authorizationImageButton
-        )
-        authorizationMenu.inflate(R.menu.authorization)
-
-        binding.containerCustomAppBarIncludeOnFragmentNewsControlPanel.authorizationImageButton.setOnClickListener {
-            authorizationMenu.show()
-        }
-
-        authorizationMenu.setOnMenuItemClickListener {
-            when (it.itemId) {
-                R.id.authorization_logout_menu_item -> {
-                    authViewModel.logOut()
-                    findNavController().navigate(R.id.action_newsControlPanelFragment_to_authFragment)
-                    true
-                }
-
-                else -> false
-            }
-        }
-
-        val activity = activity ?: return
-        val dialog = AlertDialog.Builder(activity)
-
-        val adapter = NewsControlPanelListAdapter(object : NewsOnInteractionListener {
-            override fun onCard(newsItem: News) {
-                viewModel.onCard(newsItem)
-            }
-
-            override fun onEdit(newItemWithCategory: NewsWithCategory) {
-                val action = NewsControlPanelFragmentDirections
-                    .actionNewsControlPanelFragmentToCreateEditNewsFragment(newItemWithCategory)
-                findNavController().navigate(action)
-            }
-
-            override fun onRemove(newItemWithCategory: NewsWithCategory) {
-                dialog.setMessage(R.string.irrevocable_deletion)
-                    .setPositiveButton(R.string.fragment_positive_button) { alertDialog, _ ->
-                        newItemWithCategory.newsItem.id?.let { viewModel.remove(it) }
-                        alertDialog.cancel()
-                    }
-                    .setNegativeButton(R.string.cancel) { alertDialog, _ ->
-                        alertDialog.cancel()
-                    }
-                    .create()
-                    .show()
-            }
-        })
-
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.data.collectLatest { state ->
-                    adapter.submitList(state)
-                    binding.controlPanelEmptyNewsListGroup.isVisible =
-                        state.isEmpty()
-                    binding.layoutBackgroundImageView.isGone = state.isEmpty()
-                }
-            }
-        }
-
-        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            viewModel.loadNewsExceptionEvent.collect {
-                dialog.setMessage(R.string.error)
-                    .setPositiveButton(R.string.fragment_positive_button) { dialog, _ ->
-                        dialog.cancel()
-                    }
-                    .create()
-                    .show()
-            }
-        }
-
-        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            viewModel.removeNewsItemExceptionEvent.collect {
-                dialog.setMessage(R.string.error_removing)
-                    .setPositiveButton(R.string.fragment_positive_button) { dialog, _ ->
-                        dialog.cancel()
-                    }
-                    .create()
-                    .show()
-            }
-        }
-
-        with(binding) {
-            sortNewsMaterialButton.setOnClickListener {
-                viewModel.onSortDirectionButtonClicked()
-                binding.newsListRecyclerView.post {
-                    binding.newsListRecyclerView.scrollToPosition(
-                        0
-                    )
-                }
-            }
-
-            addNewsImageView.setOnClickListener {
-                findNavController().navigate(
-                    R.id.action_newsControlPanelFragment_to_createEditNewsFragment
-                )
-            }
-
-            filterNewsMaterialButton.setOnClickListener {
-                val action =
-                    NewsControlPanelFragmentDirections.actionNewsControlPanelFragmentToFilterNewsFragment(
-                        FragmentsTags.NEWS_CONTROL_PANEL_FRAGMENT
-                    )
-                findNavController().navigate(action)
-            }
-
-            controlPanelNewsRetryMaterialButton.setOnClickListener {
-                viewModel.onRefresh()
-            }
-        }
-
-        binding.newsListRecyclerView.adapter = adapter
-
-        binding.newsControlPanelSwipeToRefresh.setOnRefreshListener {
-            viewModel.onRefresh()
-            binding.newsControlPanelSwipeToRefresh.isRefreshing = false
-        }
-
-        setFragmentResultListener("requestKey") { _, bundle ->
-            val args = bundle.getParcelable<NewsFilterArgs>("filterArgs")
-            viewModel.onFilterNewsClicked(
-                args?.category?.let { Utils.convertNewsCategory(it) },
-                args?.dates?.get(0),
-                args?.dates?.get(1),
-                args?.status
-            )
-        }
+        notifyItemChanged(position)
     }
 }

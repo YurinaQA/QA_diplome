@@ -9,32 +9,41 @@ import static org.hamcrest.Matchers.allOf;
 import androidx.test.espresso.ViewInteraction;
 
 import ru.iteco.fmhandroid.R;
-import ru.iteco.fmhandroid.ui.data.DataGenerator;
 
-public class AppBarPage extends DataGenerator {
-    //Иконка "бургер" навигационного меню
-    public static ViewInteraction navigationButton = onView(withId(R.id.main_menu_image_button));
+public class AppBarPage {
 
-    //"News" в навигационном меню
-    public static ViewInteraction navigationNews = onView(allOf(withId(android.R.id.title),
-            withText("News")));
+    // Иконка "бургер" навигационного меню
+    public ViewInteraction getNavigationButton() {
+        return onView(withId(R.id.main_menu_image_button));
+    }
 
-    //"About" в навигационном меню
-    public static ViewInteraction navigationAbout = onView(allOf(withId(android.R.id.title),
-            withText("About")));
+    // "News" в навигационном меню
+    public ViewInteraction getNavigationNews() {
+        return onView(allOf(withId(android.R.id.title), withText("News")));
+    }
 
-    //"Main" в навигационном меню
-    public static ViewInteraction navigationMain = onView(allOf(withId(android.R.id.title),
-            withText("Main")));
+    // "About" в навигационном меню
+    public ViewInteraction getNavigationAbout() {
+        return onView(allOf(withId(android.R.id.title), withText("About")));
+    }
 
-    //Кнопка "бабочка" для перехода на страницу "Love is all"
-    public static ViewInteraction loveIsAllBtn = onView(
-            allOf(withId(R.id.our_mission_image_button), withContentDescription("Our Mission")));
+    // "Main" в навигационном меню
+    public ViewInteraction getNavigationMain() {
+        return onView(allOf(withId(android.R.id.title), withText("Main")));
+    }
 
-    //Кнопка выхода, иконка "Человечек"
-    public static ViewInteraction exitBtn = onView(withId(R.id.authorization_image_button));
+    // Кнопка "бабочка" (Our Mission)
+    public ViewInteraction getLoveIsAllBtn() {
+        return onView(allOf(withId(R.id.our_mission_image_button), withContentDescription("Our Mission")));
+    }
 
-    //Текст "Log out"
-    public static ViewInteraction logOut = onView(allOf(withId(android.R.id.title), withText("Log out")));
+    // Кнопка выхода (иконка "человечек")
+    public ViewInteraction getExitButton() {
+        return onView(withId(R.id.authorization_image_button));
+    }
 
+    // Текст "Log out"
+    public ViewInteraction getLogOutText() {
+        return onView(allOf(withId(android.R.id.title), withText("Log out")));
+    }
 }

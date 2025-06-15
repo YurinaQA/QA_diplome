@@ -15,38 +15,38 @@ import android.view.View;
 
 import androidx.test.espresso.ViewInteraction;
 
-import org.hamcrest.Matchers;
-
 import ru.iteco.fmhandroid.R;
-import ru.iteco.fmhandroid.ui.data.DataGenerator;
 
+public class AuthorizationPage {
 
-public class AuthorizationPage extends DataGenerator {
-    //Поле для ввода логина
-    public static ViewInteraction loginField = onView(withId(R.id.login_text_input_layout));
-    public static ViewInteraction loginFieldAsTextField = onView(allOf(supportsInputMethods(), isDescendantOfA(withId(R.id.login_text_input_layout))));
+    public ViewInteraction getLoginFieldLayout() {
+        return onView(withId(R.id.login_text_input_layout));
+    }
 
-    //Поле для ввода пароля
-    public static ViewInteraction passwordField = onView(withId(R.id.password_text_input_layout));
-    public static ViewInteraction passwordFieldAsTextField = onView(allOf(supportsInputMethods(), isDescendantOfA(withId(R.id.password_text_input_layout))));
+    public ViewInteraction getLoginTextField() {
+        return onView(allOf(supportsInputMethods(), isDescendantOfA(withId(R.id.login_text_input_layout))));
+    }
 
-    //Кнопка авторизации
-    public static ViewInteraction loginButton = onView(withId(R.id.enter_button));
+    public ViewInteraction getPasswordFieldLayout() {
+        return onView(withId(R.id.password_text_input_layout));
+    }
 
-    //Заголовок авторизации
-    public static ViewInteraction AuthorizationText = onView(withText("Authorization"));
-   // public static ViewInteraction AuthorizationText = onView(allOf(withText("Authorization"), withId(R.id.nav_host_fragment)));
+    public ViewInteraction getPasswordTextField() {
+        return onView(allOf(supportsInputMethods(), isDescendantOfA(withId(R.id.password_text_input_layout))));
+    }
 
-    //Появление ошибок
-    public static void errorMessageText(String text, View decorView) {
+    public ViewInteraction getLoginButton() {
+        return onView(withId(R.id.enter_button));
+    }
+
+    public ViewInteraction getAuthorizationText() {
+        return onView(withText("Authorization"));
+    }
+
+    // Сделали метод статическим
+    public static void checkErrorMessageDisplayed(String text, View decorView) {
         onView(withText(text))
                 .inRoot(withDecorView(not(decorView)))
                 .check(matches(isDisplayed()));
     }
-
-
-
-
 }
-
-

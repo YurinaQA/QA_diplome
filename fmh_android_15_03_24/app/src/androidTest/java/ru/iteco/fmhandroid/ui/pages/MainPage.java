@@ -11,19 +11,31 @@ import ru.iteco.fmhandroid.R;
 
 public class MainPage {
 
-    //Сворачивание/разворачивание ленты новостей
-    public static ViewInteraction openNewsBtn = onView(withId(R.id.expand_material_button));
-    //public static ViewInteraction openNewsBtn = onView(withId(R.id.container_list_news_include_on_fragment_main));
+    /**
+     * Кнопка для сворачивания/разворачивания ленты новостей.
+     */
+    public ViewInteraction getOpenNewsButton() {
+        return onView(withId(R.id.expand_material_button));
+    }
 
-    //Проверка отображения "All news"
-    public static ViewInteraction allNewsText = onView(
-            allOf(withId(R.id.all_news_text_view), withText("ALL NEWS")));
+    /**
+     * Текст "ALL NEWS" для проверки отображения на главной странице.
+     */
+    public ViewInteraction getAllNewsText() {
+        return onView(allOf(withId(R.id.all_news_text_view), withText("ALL NEWS")));
+    }
 
-    //Переход на страницу новостей через "All news"
-    public static ViewInteraction allNewsBtn = onView(
-            allOf(withId(R.id.all_news_text_view), withText("ALL NEWS")));
+    /**
+     * Кнопка "ALL NEWS" для перехода на страницу новостей.
+     */
+    public ViewInteraction getAllNewsButton() {
+        return onView(allOf(withId(R.id.all_news_text_view), withText("ALL NEWS")));
+    }
 
-    ////Текст заголовка новостной ленты на главной странице
-    public static ViewInteraction newsFeedTitle = onView(withId(R.id.container_list_news_include_on_fragment_main));
-
+    /**
+     * Заголовок новостной ленты на главной странице.
+     */
+    public ViewInteraction getNewsFeedTitle() {
+        return onView(withId(R.id.container_list_news_include_on_fragment_main));
+    }
 }
