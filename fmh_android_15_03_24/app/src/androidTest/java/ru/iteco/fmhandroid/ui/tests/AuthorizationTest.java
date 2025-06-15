@@ -40,20 +40,6 @@ public class AuthorizationTest extends DataGenerator {
         activityScenarioRule.getScenario().onActivity(activity -> decorView = activity.getWindow().getDecorView());
     }
 
-//    @After
-//    public void loginOut() {
-//        try {
-//
-//            waitUntilElement(R.id.nav_host_fragment);
-//            AuthorizationText.check(matches(isDisplayed()));
-//        } catch (androidx.test.espresso.NoMatchingViewException e) {
-//            waitUntilElement(R.id.authorization_image_button);
-//            exitBtn.check(matches(isDisplayed()));
-//            exitBtn.perform(click());
-//            waitUntilElement(android.R.id.title);
-//            logOut.perform(click());
-//        }
-//    }
 
     @Test
     @Story("Авторизация валидными данными")

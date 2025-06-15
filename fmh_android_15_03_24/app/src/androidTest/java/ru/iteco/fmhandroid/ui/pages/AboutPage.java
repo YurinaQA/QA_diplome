@@ -45,7 +45,7 @@ public class AboutPage {
             allOf(withId(R.id.about_terms_of_use_value_text_view), withText("https://vhospice.org/#/terms-of-use"),
                     withParent(withParent(IsInstanceOf.<View>instanceOf(android.widget.LinearLayout.class)))));
 
-    //Отбражение копирайта
+    //Отображение копирайта
     public static ViewInteraction textCopyRight = onView(
             withId(R.id.about_company_info_label_text_view));
 }

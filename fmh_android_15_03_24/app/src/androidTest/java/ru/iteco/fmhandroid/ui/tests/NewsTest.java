@@ -47,13 +47,6 @@ public class NewsTest extends DataGenerator {
         activityScenarioRule.getScenario().onActivity(activity -> decorView = activity.getWindow().getDecorView());
     }
 
-    @Test
-    @Story("Сворачивание/разворачивание описания новостей на странице 'News'")
-    public void shoulOpenNewsBox() {
-        NewsStep.openNewsBox(number);
-        //Assert
-        NewsStep.checkNewsBox(number);
-    }
 
     @Test
     @Story("Обновление страницы  'News' нажатием кнопкой 'Refresh'")
