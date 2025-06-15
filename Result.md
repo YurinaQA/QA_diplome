@@ -15,8 +15,8 @@
 
 
 **Непрошедшие тесты**
-1. Переключение статуса "Active"/"Not active" в разделе "Creating news" 
-2. Переход в раздел "About" из раздела "News"
+1. Переключение статуса "Active"/"Not active" в разделе "Creating news" - Toggle Switches "About" не активен 
+2. Переход в раздел "About" из раздела "News" - кнопка "About" не активна
 
 
 
