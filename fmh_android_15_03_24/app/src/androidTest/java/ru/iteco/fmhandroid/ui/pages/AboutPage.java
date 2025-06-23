@@ -1,51 +1,118 @@
 package ru.iteco.fmhandroid.ui.pages;
 
-import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static androidx.test.espresso.matcher.ViewMatchers.withParent;
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static org.hamcrest.Matchers.allOf;
-
-import android.view.View;
-
+import androidx.test.espresso.Espresso;
 import androidx.test.espresso.ViewInteraction;
+import androidx.test.espresso.matcher.ViewMatchers;
 
+import org.hamcrest.Matchers;
 import org.hamcrest.core.IsInstanceOf;
 
 import ru.iteco.fmhandroid.R;
 
 public class AboutPage {
+    // Приватные поля для хранения взаимодействий с элементами
+    private ViewInteraction versionText;
+    private ViewInteraction textPrivacyPolicy;
+    private ViewInteraction textTermsOfUse;
+    private ViewInteraction textPrivacyPolicyLink;
+    private ViewInteraction textTermsOfUseLink;
+    private ViewInteraction textCopyRight;
 
+    // Конструктор для инициализации элементов
+    public AboutPage() {
+        initElements();
+    }
 
-    //Отображения "About"
-    public static ViewInteraction VersionText = onView(allOf(withId(R.id.about_version_title_text_view),
-            withText("Version:"),
-            withParent(withParent(IsInstanceOf.instanceOf(android.widget.LinearLayout.class)))));
+    private void initElements() {
+        versionText = Espresso.onView(
+                Matchers.allOf(
+                        ViewMatchers.withId(R.id.about_version_title_text_view),
+                        ViewMatchers.withText("Version:"),
+                        ViewMatchers.withParent(
+                                ViewMatchers.withParent(
+                                        IsInstanceOf.instanceOf(android.widget.LinearLayout.class)
+                                )
+                        )
+                )
+        );
 
-    //Отображение "Privacy Policy:"
-    public static ViewInteraction textPrivacyPolicy = onView(
-            allOf(withId(R.id.about_privacy_policy_label_text_view), withText("Privacy Policy:"),
-                    withParent(withParent(IsInstanceOf.<View>instanceOf(android.widget.LinearLayout.class))),
-                    isDisplayed()));
+        textPrivacyPolicy = Espresso.onView(
+                Matchers.allOf(
+                        ViewMatchers.withId(R.id.about_privacy_policy_label_text_view),
+                        ViewMatchers.withText("Privacy Policy:"),
+                        ViewMatchers.withParent(
+                                ViewMatchers.withParent(
+                                        IsInstanceOf.instanceOf(android.widget.LinearLayout.class)
+                                )
+                        ),
+                        ViewMatchers.isDisplayed()
+                )
+        );
 
-    //Отображение "Terms of use:"
-    public static ViewInteraction textTermsOfUse = onView(
-            allOf(withId(R.id.about_terms_of_use_label_text_view), withText("Terms of use:"),
-                    withParent(withParent(IsInstanceOf.<View>instanceOf(android.widget.LinearLayout.class))),
-                    isDisplayed()));
+        textTermsOfUse = Espresso.onView(
+                Matchers.allOf(
+                        ViewMatchers.withId(R.id.about_terms_of_use_label_text_view),
+                        ViewMatchers.withText("Terms of use:"),
+                        ViewMatchers.withParent(
+                                ViewMatchers.withParent(
+                                        IsInstanceOf.instanceOf(android.widget.LinearLayout.class)
+                                )
+                        ),
+                        ViewMatchers.isDisplayed()
+                )
+        );
 
-    //Отображение ссылки "Privacy Policy:"
-    public static ViewInteraction textPrivacyPolicyLink = onView(
-            allOf(withId(R.id.about_privacy_policy_value_text_view), withText("https://vhospice.org/#/privacy-policy/"),
-                    withParent(withParent(IsInstanceOf.<View>instanceOf(android.widget.LinearLayout.class)))));
+        textPrivacyPolicyLink = Espresso.onView(
+                Matchers.allOf(
+                        ViewMatchers.withId(R.id.about_privacy_policy_value_text_view),
+                        ViewMatchers.withText("https://vhospice.org/#/privacy-policy/"),
+                        ViewMatchers.withParent(
+                                ViewMatchers.withParent(
+                                        IsInstanceOf.instanceOf(android.widget.LinearLayout.class)
+                                )
+                        )
+                )
+        );
 
-    //Отображение ссылки "Terms of use:"
-    public static ViewInteraction textTermsOfUseLink = onView(
-            allOf(withId(R.id.about_terms_of_use_value_text_view), withText("https://vhospice.org/#/terms-of-use"),
-                    withParent(withParent(IsInstanceOf.<View>instanceOf(android.widget.LinearLayout.class)))));
+        textTermsOfUseLink = Espresso.onView(
+                Matchers.allOf(
+                        ViewMatchers.withId(R.id.about_terms_of_use_value_text_view),
+                        ViewMatchers.withText("https://vhospice.org/#/terms-of-use"),
+                        ViewMatchers.withParent(
+                                ViewMatchers.withParent(
+                                        IsInstanceOf.instanceOf(android.widget.LinearLayout.class)
+                                )
+                        )
+                )
+        );
 
-    //Отображение копирайта
-    public static ViewInteraction textCopyRight = onView(
-            withId(R.id.about_company_info_label_text_view));
+        textCopyRight = Espresso.onView(
+                ViewMatchers.withId(R.id.about_company_info_label_text_view)
+        );
+    }
+
+    // Методы для работы с элементами страницы
+    public ViewInteraction getVersionText() {
+        return versionText;
+    }
+
+    public ViewInteraction getTextPrivacyPolicy() {
+        return textPrivacyPolicy;
+    }
+
+    public ViewInteraction getTextTermsOfUse() {
+        return textTermsOfUse;
+    }
+
+    public ViewInteraction getTextPrivacyPolicyLink() {
+        return textPrivacyPolicyLink;
+    }
+
+    public ViewInteraction getTextTermsOfUseLink() {
+        return textTermsOfUseLink;
+    }
+
+    public ViewInteraction getTextCopyRight() {
+        return textCopyRight;
+    }
 }
